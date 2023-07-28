@@ -1,0 +1,182 @@
+{
+  "name": "SemanticModel",
+  "compatibilityLevel": 1200,
+  "model": {
+    "culture": "zh-CN",
+    "dataSources": [
+      {
+        "name": "SqlServer 192.168.1.105 mstscService",
+        "connectionString": "Provider=SQLOLEDB;Data Source=192.168.1.105;Initial Catalog=mstscService;User ID=jxd;Persist Security Info=false",
+        "impersonationMode": "impersonateServiceAccount",
+        "annotations": [
+          {
+            "name": "ConnectionEditUISource",
+            "value": "SqlServer"
+          }
+        ]
+      }
+    ],
+    "tables": [
+      {
+        "name": "cloudDailyReal_ticket",
+        "columns": [
+          {
+            "name": "hotelCode",
+            "dataType": "string",
+            "sourceColumn": "hotelCode",
+            "sourceProviderType": "Char"
+          },
+          {
+            "name": "ValueType",
+            "dataType": "string",
+            "sourceColumn": "ValueType",
+            "sourceProviderType": "Char"
+          },
+          {
+            "name": "value",
+            "dataType": "double",
+            "sourceColumn": "value",
+            "sourceProviderType": "Numeric"
+          },
+          {
+            "name": "synflag",
+            "dataType": "int64",
+            "sourceColumn": "synflag",
+            "sourceProviderType": "UnsignedTinyInt"
+          },
+          {
+            "name": "v_bak1",
+            "dataType": "string",
+            "sourceColumn": "v_bak1",
+            "sourceProviderType": "Char"
+          },
+          {
+            "name": "v_bak2",
+            "dataType": "string",
+            "sourceColumn": "v_bak2",
+            "sourceProviderType": "Char"
+          },
+          {
+            "name": "v_bak3",
+            "dataType": "string",
+            "sourceColumn": "v_bak3",
+            "sourceProviderType": "Char"
+          },
+          {
+            "name": "v_bak4",
+            "dataType": "string",
+            "sourceColumn": "v_bak4",
+            "sourceProviderType": "Char"
+          },
+          {
+            "name": "cDate",
+            "dataType": "dateTime",
+            "sourceColumn": "cDate",
+            "formatString": "General Date",
+            "sourceProviderType": "DBTimeStamp"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "cloudDailyReal_ticket",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": " SELECT [dbo].[cloudDailyReal_ticket].* FROM [dbo].[cloudDailyReal_ticket] ",
+              "dataSource": "SqlServer 192.168.1.105 mstscService"
+            }
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": " SELECT [dbo].[cloudDailyReal_ticket].* FROM [dbo].[cloudDailyReal_ticket] "
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "cloudDailyReal_ticket"
+          },
+          {
+            "name": "_TM_ExtProp_DbSchemaName",
+            "value": "dbo"
+          }
+        ]
+      },
+      {
+        "name": "日期表",
+        "dataCategory": "Time",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "Date",
+            "dataType": "dateTime",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "isKey": true,
+            "sourceColumn": "[Date]"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "年",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[年]"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "季",
+            "dataType": "double",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[季]"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "月",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[月]"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "日",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[日]"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "CalculatedTable 1",
+            "source": {
+              "type": "calculated",
+              "expression": [
+                "",
+                "ADDCOLUMNS(",
+                "\t\tCALENDAR(",
+                "\t\t\tDATE(2020,1,1),",
+                "\t\t\tDATE(2023,12,31)",
+                "\t\t),",
+                "\t\t\"年\",YEAR([Date]),",
+                "\t\t\"季\",ROUNDUP(MONTH([Date])/3,0),",
+                "\t\t\"月\",MONTH([Date]),",
+                "\t\t\"日\",DAY([Date])",
+                "\t)"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "annotations": [
+      {
+        "name": "ClientCompatibilityLevel",
+        "value": "400"
+      }
+    ]
+  },
+  "id": "SemanticModel"
+}

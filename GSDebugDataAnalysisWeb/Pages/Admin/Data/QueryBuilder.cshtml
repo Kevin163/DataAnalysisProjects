@@ -1,0 +1,40 @@
+﻿@page
+@model GSDebugDataAnalysisWeb.Pages.Admin.Data.QueryBuilderModel
+@{
+    Output.WriteLine(
+        Html.Kendo()
+        .TabStrip()
+        .Name("dataModuleTabs")
+        .Items(items =>
+        {
+            var selected = true;
+            foreach(var module in Model.DataModules)
+            {
+                var tableTree = Html.Kendo()
+                .TreeView()
+                .Name($"tableTree{module.ID}")
+                .Items(tables =>
+                {
+                    foreach(var table in module.Tables)
+                    {
+                        tables.Add()
+                        .Text(table.Name)
+                        .Items(columns =>
+                        {
+                            foreach(var col in table.Columns)
+                            {
+                                columns.Add().Text(col.Name);
+                            }
+                        });
+                    }
+                });
+
+                items.Add()
+                .Text(module.Name)
+                .Selected(selected)
+                .Content(tableTree.ToHtmlString());
+                selected = false;
+            }
+        })
+    );
+}

@@ -1,0 +1,52 @@
+﻿@page
+@using System.Data
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+    var products = new List<string>();
+    var addQtys = new List<int>();
+    var sendQtys = new List<int>();
+    foreach (DataRow dr in Model.JobQtysByProductNameTable.Rows)
+    {
+        products.Add(dr["产品[产品名称]"].ToString());
+        if (int.TryParse(dr["[本期新增]"].ToString(),out int addQty))
+        {
+            addQtys.Add(addQty);
+        }
+        else
+        {
+            addQtys.Add(0);
+        }
+        if (int.TryParse(dr["[本期发出]"].ToString(),out int sendQty))
+        {
+            sendQtys.Add(sendQty);
+        }
+        else
+        {
+            sendQtys.Add(0);
+        }
+    }
+}
+
+@(
+Html.Kendo().Chart()
+        .Name("chart")
+        .Title("按产品分析问题数")
+        .Legend(legend => { legend.Position(ChartLegendPosition.Bottom);})
+        .HtmlAttributes(new { style="height:800px;"})
+        .Series(series =>
+        {
+            series.Bar(addQtys).Name("新增问题数");
+            series.Bar(sendQtys).Name("发出问题数");
+        })
+        .CategoryAxis(axis => axis
+            .Categories(products.ToArray())
+        )
+        .ValueAxis(axis => axis
+            .Numeric().Labels(labels => labels.Format("{0}"))
+        )
+        .Tooltip(tooltip => tooltip
+            .Visible(true)
+            .Format("{0}")
+        )
+    )
