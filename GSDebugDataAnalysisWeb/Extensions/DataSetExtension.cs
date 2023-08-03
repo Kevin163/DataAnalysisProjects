@@ -37,7 +37,7 @@ namespace GSDebugDataAnalysisWeb.Extensions
             return new DataModuleTable
             {
                 ID = drSchemaTable["ID"].ToString(),
-                Name = drSchemaTable["Name"].ToString(),
+                Name = drSchemaTable["Name"].ToString(),                
             };
         }
         /// <summary>
@@ -66,7 +66,7 @@ namespace GSDebugDataAnalysisWeb.Extensions
             {
                 ID = id,
                 Name = name,
-                UniqueName = $"{table.Name}.{name}",
+                UniqueName = $"'{table.Name}'.[{name}]",
                 DataType = dataType
             };
         }
@@ -82,7 +82,17 @@ namespace GSDebugDataAnalysisWeb.Extensions
             {
                 foreach(DataRow dr in dt.Rows)
                 {
-                    
+                    var isHidden = Convert.ToBoolean(dr["IsHidden"]);
+                    if (!isHidden)
+                    {
+                        result.Add(new DataModuleMeasure
+                        {
+                            ID = dr["ID"].ToString(),
+                            Name = dr["Name"].ToString(),
+                            DisplayFolder = dr["TableId"].ToString(),
+                            DataType = (DataModuleTableColumnDataType)Convert.ToUInt16(dr["DataType"])
+                        });
+                    }
                 }
             }
             return result;

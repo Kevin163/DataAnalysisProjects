@@ -1,0 +1,18 @@
+﻿#builderContainer {
+    display: flex;
+    height:100%;
+}
+    #builderContainer #moduleList{
+        width:300px;
+        height:100%;
+        overflow:auto;
+    }
+#queryBuilderContainer{
+    margin-left:5px;
+}
+#queryBuilderContainer #columnsContainer {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    height:50%;
+}

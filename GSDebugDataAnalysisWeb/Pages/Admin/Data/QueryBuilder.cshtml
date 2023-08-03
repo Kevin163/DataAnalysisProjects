@@ -1,7 +1,9 @@
 ﻿@page
 @model GSDebugDataAnalysisWeb.Pages.Admin.Data.QueryBuilderModel
-@{
-    Output.WriteLine(
+<div id="builderContainer">
+    <div id="moduleList">
+        @{
+            Output.WriteLine(
         Html.Kendo()
         .TabStrip()
         .Name("dataModuleTabs")
@@ -13,17 +15,31 @@
                 var tableTree = Html.Kendo()
                 .TreeView()
                 .Name($"tableTree{module.ID}")
+                .DragAndDrop(true)
+                .Events(events => { events.Drag("onModuleTreeDrag"); })
                 .Items(tables =>
                 {
+                    tables.Add()
+                    .Text("分析指标")
+                    .Id("分析指标")
+                    .Items(measures=>
+                    {
+                        foreach(var measure in module.Measurements)
+                        {
+                            measures.Add().Text(measure.Name).Id(measure.UniqueName);
+                        }
+                    });
+
                     foreach(var table in module.Tables)
                     {
                         tables.Add()
                         .Text(table.Name)
+                        .Id(table.Name)
                         .Items(columns =>
                         {
                             foreach(var col in table.Columns)
                             {
-                                columns.Add().Text(col.Name);
+                                columns.Add().Text(col.Name).Id(col.UniqueName);
                             }
                         });
                     }
@@ -38,3 +54,77 @@
         })
     );
 }
+    </div>
+    <div id="queryBuilderContainer">
+        <div id="columnsContainer">
+            <label>要分析的列/指标(拖动模型中的列来增加)</label>
+            @(
+                Html.Kendo().ListBox()
+                .Name("queryColumns")
+                .Draggable(true)
+                .DataValueField("id")
+                .DataTextField("text")
+                .HtmlAttributes(new { style="width:100%;height:100%;"})
+                .Toolbar(toolbar=> { toolbar.Position(ListBoxToolbarPosition.Right).Tools(buttons => buttons.MoveUp().MoveDown().Remove()); })
+                )
+        </div>
+       <div id="filtersContainer">
+           <label>过滤条件</label>
+            @(
+                Html.Kendo().ListBox()
+                .Name("queryFilters")
+                .Draggable(true)
+                .HtmlAttributes(new { style = "width:100%;height:100%;" })
+                .Toolbar(toolbar => { toolbar.Position(ListBoxToolbarPosition.Right).Tools(buttons => buttons.Remove()); })
+                )
+       </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function onModuleTreeDrag(e){
+        if (isTargetListbox(e.dropTarget)) {
+            let dataItem = e.sender.dataItem(e.sourceNode);
+            if (dataItem.hasChildren) {
+                let children = dataItem.children.options.data.items;
+                for(let index in children){
+                    addItemToColumns(children[index]);
+                }
+            }else{
+                addItemToColumns({id:dataItem.id,text:dataItem.text});
+            }
+        }
+    }
+    function addItemToColumns(dataItem){
+        var columnsListbox = $("#queryColumns").data("kendoListBox");
+        var items = columnsListbox.dataItems();
+        for (var i = 0; i < items.length; i++) {
+            var listItem = items[i];
+            if (listItem.id === dataItem.id) {
+                //already exist
+                return;
+            }
+        }
+        columnsListbox.add(dataItem);
+    }
+    function isTargetListbox(target){
+        let $target = $(target);
+        //if the target element is the list box self
+        if ($target.hasClass('k-list-content')){
+            return true;
+        }
+        //if the target element is the list item in the list box
+        if ($target.parents(".k-list-content").length > 0){
+            return true;
+        }
+        return false;
+    }
+</script>
+<style type="text/css">
+    html, body, .container, main {
+        height: 100%;
+    }
+
+    body, .container {
+        height:calc(100% - 60px);
+    }
+</style>
